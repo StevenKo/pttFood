@@ -1,4 +1,6 @@
-package com.example.com.ptt.food.blog;
+package com.ptt.food.blog;
+
+import com.ptt.food.blog.R;
 
 import android.os.Bundle;
 import android.app.Activity;
