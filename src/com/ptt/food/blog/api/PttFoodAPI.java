@@ -85,6 +85,31 @@ public class PttFoodAPI {
         return articles;
     }
 
+    public static Article getArticle(int article_id) {
+        String message = getMessageFromServer("GET", "/api/v1/articles/" + article_id + ".json", null);
+
+        if (message == null) {
+            return null;
+        } else {
+            try {
+                JSONObject nObject;
+                nObject = new JSONObject(message.toString());
+                String author = nObject.getString("author");
+                String content = nObject.getString("content");
+                String link = nObject.getString("link");
+                String release_time = nObject.getString("release_time");
+                String title = nObject.getString("title");
+                int category_id = nObject.getInt("category_id");
+
+                return new Article(article_id, author, title, release_time, content, link, category_id);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
     public static String getMessageFromServer(String requestMethod, String apiPath, JSONObject json) {
         URL url;
         try {
