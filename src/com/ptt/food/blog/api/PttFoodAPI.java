@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -72,6 +74,46 @@ public class PttFoodAPI {
                     String release_time = jsonArray.getJSONObject(i).getString("release_time");
                     String title = jsonArray.getJSONObject(i).getString("title");
                     Article a = new Article(id, author, title, release_time, "", "", category_id);
+                    articles.add(a);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        return articles;
+    }
+
+    public static ArrayList<Article> searchArticles(String keyword, int page) {
+        String query;
+        try {
+            query = URLEncoder.encode(keyword, "utf-8");
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+            return null;
+        }
+
+        ArrayList<Article> articles = new ArrayList<Article>();
+        String message = getMessageFromServer("GET", "/api/v1/articles/search.json?keyword=" + keyword + "&page=" + page, null);
+        if (message == null) {
+            return null;
+        } else {
+            try {
+                JSONArray jsonArray;
+                jsonArray = new JSONArray(message.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    int id = jsonArray.getJSONObject(i).getInt("id");
+                    String author = jsonArray.getJSONObject(i).getString("author");
+                    String release_time = jsonArray.getJSONObject(i).getString("release_time");
+                    String title = jsonArray.getJSONObject(i).getString("title");
+                    String content = jsonArray.getJSONObject(i).getString("content");
+                    String link = jsonArray.getJSONObject(i).getString("link");
+                    // int category_id = jsonArray.getJSONObject(i).getInt("");
+                    Article a = new Article(id, author, title, release_time, content, "", 0);
                     articles.add(a);
 
                 }
