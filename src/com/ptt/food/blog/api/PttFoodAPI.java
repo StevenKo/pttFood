@@ -9,6 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -26,6 +28,31 @@ public class PttFoodAPI {
 
     public static ArrayList<Category> getAreaCateogories() {
         return Category.getAreas();
+    }
+
+    public static ArrayList<Category> getSubcategories(int category_id) {
+        ArrayList<Category> subCategories = new ArrayList<Category>();
+        String message = getMessageFromServer("GET", "/api/v1/categories/" + category_id + "/subcagtegory.json", null);
+        if (message == null) {
+            return null;
+        } else {
+            try {
+                JSONArray jsonArray;
+                jsonArray = new JSONArray(message.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    int id = jsonArray.getJSONObject(i).getInt("id");
+                    String name = jsonArray.getJSONObject(i).getString("name");
+                    Category c = new Category(id, name);
+                    subCategories.add(c);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return subCategories;
     }
 
     public static String getMessageFromServer(String requestMethod, String apiPath, JSONObject json) {
