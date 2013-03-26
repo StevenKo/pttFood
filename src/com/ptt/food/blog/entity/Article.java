@@ -35,6 +35,10 @@ public class Article {
     public String getReleaseTime() {
         return release_time;
     }
+    
+    public String getTitle() {
+        return title;
+    }
 
     public String getContent() {
         return content;
