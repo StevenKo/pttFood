@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,8 +28,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	
 	private static final int ID_WORD = 0;
     private static final int ID_SITE = 1;
-
-	
+    
 	private TextView articleTextView;
 	private TextView articleTextTitle;
 	private TextView articleTextDate;
@@ -46,6 +47,9 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	private LinearLayout layoutProgress;
 	private MenuItem itemWord;
 	private MenuItem itemSite;
+	private LinearLayout layoutWord;
+	private WebView webArticle;
+	private boolean webBoolean = false;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	private void setViews() {		
 		
 		layoutProgress = (LinearLayout) findViewById (R.id.layout_progress);
+		layoutWord = (LinearLayout) findViewById (R.id.layout_word);
 		articleTextView = (TextView) findViewById (R.id.article_text);
 		articleTextTitle = (TextView) findViewById (R.id.text_article_title);
 		articleTextDate = (TextView) findViewById (R.id.text_article_date);
@@ -76,6 +81,12 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
         articleButtonUp = (Button) findViewById (R.id.article_button_up);
         articleButtonDown = (Button) findViewById (R.id.article_button_down);
         articlePercent = (TextView) findViewById (R.id.article_percent);
+        webArticle = (WebView) findViewById (R.id.web_article);
+        webArticle.getSettings().setSupportZoom(true); 
+        webArticle.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);   
+        webArticle.setWebViewClient(new WebViewClient());
+        webArticle.setVisibility(View.GONE);
+        
         
         articleScrollView.setScrollViewListener(ArticleActivity.this);
         
@@ -151,12 +162,20 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	    case ID_WORD: // setting
 	    	itemWord.setIcon(getResources().getDrawable(R.drawable.word_selected));
 	    	itemSite.setIcon(getResources().getDrawable(R.drawable.site_black));
+	    	layoutWord.setVisibility(View.VISIBLE);
+	    	webArticle.setVisibility(View.GONE);
 	    	Toast.makeText(this, "文字版", Toast.LENGTH_SHORT).show();
 	        break;
 	    case ID_SITE: // response
-	    	itemWord.setIcon(getResources().getDrawable(R.drawable.word_black));
-	    	itemSite.setIcon(getResources().getDrawable(R.drawable.site_selected));
-	    	Toast.makeText(this, "網誌版", Toast.LENGTH_SHORT).show();
+	    	if(webBoolean){
+		    	itemWord.setIcon(getResources().getDrawable(R.drawable.word_black));
+		    	itemSite.setIcon(getResources().getDrawable(R.drawable.site_selected));
+		    	layoutWord.setVisibility(View.GONE);
+		    	webArticle.setVisibility(View.VISIBLE);
+		    	Toast.makeText(this, "網誌版", Toast.LENGTH_SHORT).show();
+	    	}else{
+	    		Toast.makeText(this, "本文章無網誌版", Toast.LENGTH_SHORT).show();
+	    	}
     		break;
 	    }
 	    return true;
@@ -189,6 +208,12 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
             articleTextTitle.setText(Html.fromHtml(text));
             
             articleTextDate.setText(myAricle.getReleaseTime());
+            if(myAricle.getLink()!=null && !myAricle.getLink().equals("null")){
+            	webBoolean = true;
+            	webArticle.loadUrl(myAricle.getLink());
+            }else{
+            	webBoolean = false;
+            }
             
         }
 	}

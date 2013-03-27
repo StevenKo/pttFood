@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import com.costum.android.widget.LoadMoreListView;
 import com.costum.android.widget.LoadMoreListView.OnLoadMoreListener;
 import com.ptt.food.blog.R;
+import com.ptt.food.blog.api.PttFoodAPI;
 import com.ptt.food.blog.entity.Article;
+import com.taiwan.imageload.ListArticleAdapter;
+import com.taiwan.imageload.ListNothingAdapter;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,11 +21,13 @@ import android.widget.Toast;
 
 public final class NewsFragment extends Fragment {
     
-	private static int myPage;
+	private static int myPage = 1;
 	private Boolean checkLoad = true;
 	private LinearLayout progressLayout;
 	private LoadMoreListView myList;
 	private ArrayList<Article> newArticles;
+	private ArrayList<Article> moreArticles;
+	private ListArticleAdapter myListAdapter;
 	
     public static NewsFragment newInstance() {     
    	 
@@ -47,8 +52,7 @@ public final class NewsFragment extends Fragment {
     	myList = (LoadMoreListView) myFragmentView.findViewById(R.id.news_list);
         myList.setOnLoadMoreListener(new OnLoadMoreListener() {
 			public void onLoadMore() {
-				// Do the work to load more items at the end of list
-				
+				// Do the work to load more items at the end of list				
 				if(checkLoad){
 					myPage = myPage +1;
 					new LoadMoreTask().execute();
@@ -79,8 +83,8 @@ public final class NewsFragment extends Fragment {
         @Override
         protected Object doInBackground(Object... params) {
             // TODO Auto-generated method stub
-
-
+        	
+        	newArticles = PttFoodAPI.getNewArticles(myPage);
             return null;
         }
 
@@ -90,17 +94,17 @@ public final class NewsFragment extends Fragment {
             super.onPostExecute(result);
             progressLayout.setVisibility(View.GONE);
             
-//            if(videos !=null){
-//          	  try{
-//          		  myListAdapter = new ListVideoAdapter(getActivity(), videos, myVideos, channelInt);
-//  		          myList.setAdapter(myListAdapter);
-//          	  }catch(Exception e){
-//          		 
-//          	  }
-//            }else{
-//          	  ListNothingAdapter nothingAdapter = new ListNothingAdapter(getActivity());
-//          	  myList.setAdapter(nothingAdapter);
-//            }
+            if(newArticles !=null){
+          	  try{
+          		  myListAdapter = new ListArticleAdapter(getActivity(), newArticles);
+  		          myList.setAdapter(myListAdapter);
+          	  }catch(Exception e){
+          		 
+          	  }
+            }else{
+	          	  ListNothingAdapter nothingAdapter = new ListNothingAdapter(getActivity());
+	          	  myList.setAdapter(nothingAdapter);
+            }
 
         }
     }
@@ -120,12 +124,12 @@ public final class NewsFragment extends Fragment {
         protected Object doInBackground(Object... params) {
             // TODO Auto-generated method stub
 
-//        	moreVideos = ChannelApi.getChannelVideo(myChannelName, myPage, "");   
-//        	if(moreVideos!= null){
-//	        	for(int i=0; i<moreVideos.size();i++){
-//	            	videos.add(moreVideos.get(i));
-//	            }
-//        	}
+        	moreArticles = PttFoodAPI.getNewArticles(myPage); 
+        	if(moreArticles!= null){
+	        	for(int i=0; i<moreArticles.size();i++){
+	        		newArticles.add(moreArticles.get(i));
+	            }
+        	}
         	
         	
             return null;
@@ -136,13 +140,13 @@ public final class NewsFragment extends Fragment {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
             
-//            if(moreVideos!= null){
-//            	myListAdapter.notifyDataSetChanged();	                
-//            }else{
-//                checkLoad= false;
-//                Toast.makeText(getActivity(), "no more data", Toast.LENGTH_SHORT).show();            	
-//            }       
-//          	myList.onLoadMoreComplete();
+            if(moreArticles!= null){
+            	myListAdapter.notifyDataSetChanged();	                
+            }else{
+                checkLoad= false;
+                Toast.makeText(getActivity(), "no more data", Toast.LENGTH_SHORT).show();            	
+            }       
+          	myList.onLoadMoreComplete();
           	
           	
         }

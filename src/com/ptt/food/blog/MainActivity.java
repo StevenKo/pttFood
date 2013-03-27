@@ -125,7 +125,8 @@ public class MainActivity extends SherlockFragmentActivity {
 	         Toast.makeText(this, "Our App", Toast.LENGTH_SHORT).show();
 	        break;
 	    case ID_FAVORITE:
-	         Toast.makeText(this, "Favorite", Toast.LENGTH_SHORT).show();
+	    	Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
+	    	startActivity(intent);
 	        break;
 	    case ID_SEARCH:
 	        break;
