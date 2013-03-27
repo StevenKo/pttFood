@@ -58,6 +58,35 @@ public class PttFoodAPI {
         return subCategories;
     }
 
+    public static ArrayList<Article> getNewArticles(int page) {
+        ArrayList<Article> articles = new ArrayList<Article>();
+        String message = getMessageFromServer("GET", "/api/v1/articles/new_articles.json?page=" + page, null);
+        if (message == null) {
+            return null;
+        } else {
+            try {
+                JSONArray jsonArray;
+                jsonArray = new JSONArray(message.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    int id = jsonArray.getJSONObject(i).getInt("id");
+                    String author = jsonArray.getJSONObject(i).getString("author");
+                    String release_time = jsonArray.getJSONObject(i).getString("release_time");
+                    String title = jsonArray.getJSONObject(i).getString("title");
+                    Article a = new Article(id, author, title, release_time, "", "", 0);
+                    articles.add(a);
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        return articles;
+    }
+
     public static ArrayList<Article> getCategoryArticles(int category_id) {
         ArrayList<Article> articles = new ArrayList<Article>();
         String message = getMessageFromServer("GET", "/api/v1/articles.json?category_id=" + category_id, null);
