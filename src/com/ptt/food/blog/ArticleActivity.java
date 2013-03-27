@@ -1,6 +1,8 @@
 package com.ptt.food.blog;
 
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,6 +24,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.kosbrother.tool.DetectScrollView;
 import com.kosbrother.tool.DetectScrollView.DetectScrollViewListener;
+import com.ptt.food.blog.api.DBAPI;
 import com.ptt.food.blog.api.PttFoodAPI;
 import com.ptt.food.blog.entity.Article;
 
@@ -32,14 +36,14 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	private TextView articleTextView;
 	private TextView articleTextTitle;
 	private TextView articleTextDate;
-	private ImageView imageFavorite;
-	private boolean addFavorite = false;  
+	private CheckBox checkboxFavorite;
 	private DetectScrollView articleScrollView;
 	private Button articleButtonUp;
 	private Button articleButtonDown;
 	private TextView articlePercent;
 	private Article myAricle; // uset to get article text
 	private Article theGottenArticle;
+	private ArrayList<Article> favoriteArticles;
 	private Bundle mBundle;
 	private String articleTitle;
 	private int articleId;
@@ -76,7 +80,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 		articleTextView = (TextView) findViewById (R.id.article_text);
 		articleTextTitle = (TextView) findViewById (R.id.text_article_title);
 		articleTextDate = (TextView) findViewById (R.id.text_article_date);
-		imageFavorite = (ImageView) findViewById (R.id.image_check_favorite);
+		checkboxFavorite = (CheckBox) findViewById (R.id.checkbox_article);
         articleScrollView = (DetectScrollView) findViewById (R.id.article_scrollview);
         articleButtonUp = (Button) findViewById (R.id.article_button_up);
         articleButtonDown = (Button) findViewById (R.id.article_button_down);
@@ -104,16 +108,14 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 			}
 		});
         
-        imageFavorite.setOnClickListener(new OnClickListener() {			 
+        checkboxFavorite.setOnClickListener(new OnClickListener() {			 
 			@Override
 			public void onClick(View arg0) {
-				if(!addFavorite){
-					addFavorite = true;
-					imageFavorite.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_heart));
+				if(checkboxFavorite.isChecked()){
+					DBAPI.insertArticle(myAricle, ArticleActivity.this);
 					Toast.makeText(ArticleActivity.this, "加入我的最愛", Toast.LENGTH_SHORT).show();
-				}else{
-					addFavorite = false;
-					imageFavorite.setBackgroundDrawable(getResources().getDrawable(R.drawable.icon_heart_gray));
+				}else{					
+					DBAPI.deleteArticle(myAricle, ArticleActivity.this);
 					Toast.makeText(ArticleActivity.this, "從我的最愛移除", Toast.LENGTH_SHORT).show();
 				}
 			}
@@ -194,6 +196,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
         		if (theGottenArticle != null){
         			myAricle = theGottenArticle;
         		}
+        		favoriteArticles = DBAPI.getAllArticles(ArticleActivity.this);
             return null;
         }
 
@@ -201,124 +204,34 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
         protected void onPostExecute(Object result) {
             super.onPostExecute(result);
             
-            layoutProgress.setVisibility(View.GONE);
-            articleTextView.setText(myAricle.getContent());
-            
-            String text = "<font color=#cc0029>"+myAricle.getTitle()+"</font>"+ "<font color=#ffcc00>"+"by "+myAricle.getAuthor()+"</font>";
-            articleTextTitle.setText(Html.fromHtml(text));
-            
-            articleTextDate.setText(myAricle.getReleaseTime());
-            if(myAricle.getLink()!=null && !myAricle.getLink().equals("null")){
-            	webBoolean = true;
-            	webArticle.loadUrl(myAricle.getLink());
-            }else{
-            	webBoolean = false;
+            if (myAricle!=null){
+	            layoutProgress.setVisibility(View.GONE);
+	            articleTextView.setText(myAricle.getContent());
+	            
+	            String text = "<font color=#cc0029>"+myAricle.getTitle()+"</font>"+ "<font color=#ffcc00>"+"by "+myAricle.getAuthor()+"</font>";
+	            articleTextTitle.setText(Html.fromHtml(text));
+	            
+	            articleTextDate.setText(myAricle.getReleaseTime());
+	            if(myAricle.getLink()!=null && !myAricle.getLink().equals("null")){
+	            	webBoolean = true;
+	            	webArticle.loadUrl(myAricle.getLink());
+	            }else{
+	            	webBoolean = false;
+	            }
+	            
+	            // set checkbox
+	            for(int i =0; i<favoriteArticles.size();i++){
+					if(favoriteArticles.get(i).getId() == myAricle.getId()){
+						checkboxFavorite.setChecked(true);
+						break;
+					}else{
+						checkboxFavorite.setChecked(false);
+					}
+			    }
             }
             
         }
 	}
-	
-//	private class GetPreviousArticleTask extends AsyncTask {
-//		
-//		@Override
-//	    protected void onPreExecute() {
-//	        super.onPreExecute();
-//	        layoutProgress.setVisibility(View.VISIBLE);
-//	    }
-//		
-//        @Override
-//        protected Object doInBackground(Object... params) {
-//        	if(myAricle!=null){
-//        		theGottenArticle= NovelAPI.getPreviousArticle(myAricle, ArticleActivity.this);
-//        		if (theGottenArticle != null){
-//        			myAricle = theGottenArticle;
-//        		}
-//        	}
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object result) {
-//
-//            super.onPostExecute(result);
-//            layoutProgress.setVisibility(View.GONE);
-//            if (theGottenArticle != null){
-//	            if(textLanguage ==1){           
-//		            String text ="";          
-//		            try {
-//						text = taobe.tec.jcc.JChineseConvertor.getInstance().t2s( myAricle.getText());
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//		            articleTextView.setText(text);
-//	            }else{            
-//	            	articleTextView.setText(myAricle.getText());
-//	            }
-//	            
-//	            myAricle.setNovelId(novelId);
-//	            articleScrollView.fullScroll(ScrollView.FOCUS_UP);
-//	            setActionBarTitle(myAricle.getTitle());
-//	            articlePercent.setText("0%");
-//	            
-//            }else{
-//            	Toast.makeText( ArticleActivity.this, getResources().getString(R.string.article_no_up), Toast.LENGTH_SHORT).show();
-//            }
-//            
-//            
-//            new GetLastPositionTask().execute();
-//       
-//            
-//        }
-//	}
-	
-//	private class GetNextArticleTask extends AsyncTask {		
-//		@Override
-//	    protected void onPreExecute() {
-//	        super.onPreExecute();
-//	        layoutProgress.setVisibility(View.VISIBLE);
-//	    }
-//		
-//        @Override
-//        protected Object doInBackground(Object... params) {
-//        	if(myAricle!=null){
-//        		theGottenArticle = NovelAPI.getNextArticle(myAricle, ArticleActivity.this);
-//        		if (theGottenArticle != null){
-//        			myAricle = theGottenArticle;
-//        		}
-//        	}
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Object result) {            
-//            super.onPostExecute(result);
-//            layoutProgress.setVisibility(View.GONE);
-//            if (theGottenArticle != null){
-//	            if(textLanguage ==1){           
-//		            String text ="";          
-//		            try {
-//						text = taobe.tec.jcc.JChineseConvertor.getInstance().t2s( myAricle.getText());
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//		            articleTextView.setText(text);
-//	            }else{            
-//	            	articleTextView.setText(myAricle.getText());
-//	            }
-//	            
-//	            myAricle.setNovelId(novelId);
-//	            articleScrollView.fullScroll(ScrollView.FOCUS_UP);
-//	            setActionBarTitle(myAricle.getTitle());
-//	            articlePercent.setText("0%");
-//            }else{
-//            	Toast.makeText( ArticleActivity.this, getResources().getString(R.string.article_no_down), Toast.LENGTH_SHORT).show();
-//            }
-//            
-//            new GetLastPositionTask().execute();
-//       
-//            
-//        }
-//	}
 
 	
 	@Override

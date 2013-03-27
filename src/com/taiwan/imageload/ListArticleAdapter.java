@@ -51,13 +51,11 @@ public class ListArticleAdapter extends BaseAdapter {
     }
     
     public View getView(final int position, View convertView, ViewGroup parent) {
-        View vi=convertView;
-        
-        if(convertView==null)
-            vi = inflater.inflate(R.layout.item_list_article, null);
+    	
+            View vi = inflater.inflate(R.layout.item_list_article, null);
 	        TextView text=(TextView)vi.findViewById(R.id.text_article_title);
 	        TextView textDate=(TextView)vi.findViewById(R.id.text_article_date);
-	        Button button = (Button)vi.findViewById(R.id.button_item_category);
+	        final Button button = (Button)vi.findViewById(R.id.button_item_category);
 	        final CheckBox checkboxFavorite = (CheckBox)vi.findViewById(R.id.checkbox_article);
 	        text.setText(data.get(position).getTitle());
 	        
@@ -72,7 +70,15 @@ public class ListArticleAdapter extends BaseAdapter {
 	        	textDate.setVisibility(View.GONE);
 	        }
 	        
-	
+	        if(data.get(position).getTitle().indexOf("[")!=-1){
+	        	int start = data.get(position).getTitle().indexOf("[")+1;
+	        	int end = data.get(position).getTitle().indexOf("]");
+	        	String btnString = data.get(position).getTitle().substring(start, end);
+	        	button.setText(btnString);
+	        }else{
+	        	button.setVisibility(View.INVISIBLE);
+	        }
+	        
 	        for(int i =0; i<dataFavorite.size();i++){
 				if(dataFavorite.get(i).getId() == data.get(position).getId()){
 					checkboxFavorite.setChecked(true);

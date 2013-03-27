@@ -44,11 +44,11 @@
 	       			android:text="2013/3/21"
 	                />
 	        </LinearLayout>
-	        <ImageView android:id="@+id/image_check_favorite"
-	            android:layout_width="36dp"
-	       	    android:layout_height="36dp"
-	       	    android:background="@drawable/icon_heart_gray"
-	            />
+	        <CheckBox android:id="@+id/checkbox_article"
+		        android:layout_width="36dp"
+		        android:layout_height="36dp"
+		        android:button="@drawable/custom_checkbox"
+	        />
 	    </LinearLayout>
 	    
 	    <com.kosbrother.tool.DetectScrollView android:id="@+id/article_scrollview"

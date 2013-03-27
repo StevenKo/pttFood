@@ -9,8 +9,11 @@ import com.ptt.food.fragment.SiteFragment;
 import com.ptt.food.fragment.TypeFragment;
 import com.viewpagerindicator.TabPageIndicator;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.app.Fragment;
@@ -34,6 +37,7 @@ public class MainActivity extends SherlockFragmentActivity {
     private static final int ID_FAVORITE = 4;
     private static final int ID_SEARCH = 5;
 	
+    private AlertDialog.Builder aboutUsDialog;
 	private String[] CONTENT;
 	private MenuItem  itemSearch;
 	
@@ -41,6 +45,7 @@ public class MainActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_tabs);
+        setAboutDialog();
         
         Resources res = getResources();
         CONTENT = res.getStringArray(R.array.tabs);
@@ -113,16 +118,23 @@ public class MainActivity extends SherlockFragmentActivity {
 	        // Toast.makeText(this, "home pressed", Toast.LENGTH_LONG).show();
 	        break;
 	    case Contact_US:
-	         Toast.makeText(this, "Contact Us", Toast.LENGTH_SHORT).show();
+	    	final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+	    	emailIntent.setType("plain/text");
+	    	emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"brotherkos@gmail.com"});
+	    	emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "聯絡我們 from Ptt美食部落");
+	    	emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "");
+	    	startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 	        break;
 	    case ID_ABOUT_US:
-	         Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show();
+	    	aboutUsDialog.show();
 	        break;
 	    case ID_GRADE:
-	         Toast.makeText(this, "Grade Us", Toast.LENGTH_SHORT).show();
+	    	Intent gradeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.recommend_url)));
+			startActivity(gradeIntent);
 	        break;
 	    case ID_OUR_APP:
-	         Toast.makeText(this, "Our App", Toast.LENGTH_SHORT).show();
+	    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getResources().getString(R.string.recommend_url)));
+			startActivity(browserIntent);
 	        break;
 	    case ID_FAVORITE:
 	    	Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
@@ -163,5 +175,18 @@ public class MainActivity extends SherlockFragmentActivity {
             return CONTENT.length;
         }
     }
+    
+    private void setAboutDialog() {
+		// TODO Auto-generated method stub
+    	aboutUsDialog = new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.about_us_string))
+				.setIcon(R.drawable.app_icon)
+				.setMessage(getResources().getString(R.string.about_us))
+				.setPositiveButton(getResources().getString(R.string.yes_string), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					
+					}
+		});
+	}
 
 }

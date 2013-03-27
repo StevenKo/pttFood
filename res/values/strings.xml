@@ -4,5 +4,10 @@
     <string name="app_name">Ptt美食部落</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <string name="recommend_url">https://play.google.com/store/apps/developer?id=KosBrother</string>
+    <string name="about_us_string">關於我們</string>
+    <string name="about_us">\nPtt美食部落是一個收集Ptt美食版文章的第三方App軟體, \n\n我們並不擁有這些文章版權. 如果您的文章不希望出現在此App, 請Email讓我們知道. \n\n感謝您. \n\nEmail: brotherkos\@gmail.com</string>
+    <string name="yes_string">確定</string>
 
 </resources>
