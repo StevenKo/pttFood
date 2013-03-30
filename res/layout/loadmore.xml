@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+     >
     
     <LinearLayout android:id="@+id/layout_progress"
         android:layout_width="fill_parent"
@@ -13,6 +15,30 @@
         	android:layout_height="wrap_content"
         	/>      
     </LinearLayout>
+    
+    <LinearLayout 
+   	 	android:id="@+id/layout_reload"
+   	 	android:layout_width="fill_parent"
+   	 	android:layout_height="fill_parent"
+     	android:gravity="center"
+     	android:visibility="gone"
+     	android:background="@color/main_color_grey_dark"
+     	>
+	    <TextView 
+	        android:layout_width="wrap_content"
+   	 		android:layout_height="wrap_content"
+   	 		android:text="無法連線"
+   	 		android:textSize="23dp"
+   	 		android:layout_marginLeft="5dp"
+   	 		android:textColor="#6E6E6E"
+	        />
+	    <Button  android:id="@+id/button_reload"
+	       android:layout_width="wrap_content"
+   	 	   android:layout_height="wrap_content"
+   	 	   android:layout_marginLeft="5dp"
+   	 	   android:text="重試"
+	        />
+	</LinearLayout>
     
     <com.costum.android.widget.LoadMoreListView
         android:id="@+id/news_list"
@@ -46,5 +72,11 @@
    	 	   android:text="重試"
 	        />
 	</LinearLayout>
+	
+    <LinearLayout
+         android:id="@+id/adonView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
 </LinearLayout>

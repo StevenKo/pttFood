@@ -3,6 +3,11 @@ package com.ptt.food.blog;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.adwhirl.AdWhirlLayout;
+import com.adwhirl.AdWhirlManager;
+import com.adwhirl.AdWhirlTargeting;
+import com.adwhirl.AdWhirlLayout.AdWhirlInterface;
+import com.google.ads.AdView;
 import com.ptt.food.blog.R;
 import com.ptt.food.fragment.NewsFragment;
 import com.ptt.food.fragment.SiteFragment;
@@ -21,14 +26,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.InputType;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements AdWhirlInterface {
 	
 	private static final int Contact_US = 0;
 	private static final int ID_ABOUT_US = 1;
@@ -36,10 +44,15 @@ public class MainActivity extends SherlockFragmentActivity {
     private static final int ID_OUR_APP = 3;
     private static final int ID_FAVORITE = 4;
     private static final int ID_SEARCH = 5;
+    private static final int ID_SETTING = 6;
 	
     private AlertDialog.Builder aboutUsDialog;
 	private String[] CONTENT;
 	private MenuItem  itemSearch;
+	private ViewPager pager;
+	
+	private final String   adWhirlKey  = "5dc7684994954d51add2cd7b0768f564";
+
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +65,30 @@ public class MainActivity extends SherlockFragmentActivity {
         
         FragmentStatePagerAdapter adapter = new GoogleMusicAdapter(getSupportFragmentManager());
 
-        ViewPager pager = (ViewPager)findViewById(R.id.pager);
+        pager = (ViewPager)findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
         TabPageIndicator indicator = (TabPageIndicator)findViewById(R.id.indicator);
         indicator.setViewPager(pager);
+        
+        try {
+            Display display = getWindowManager().getDefaultDisplay();
+            int width = display.getWidth(); // deprecated
+            int height = display.getHeight(); // deprecated
+
+            if (width > 320) {
+                setAdAdwhirl();
+            }
+        } catch (Exception e) {
+
+        }
     }
 
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+    	
+    	menu.add(0, ID_SETTING, 0, "閱讀設定").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
     	menu.add(0, Contact_US, 0, "聯絡我們").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
     	menu.add(0, ID_ABOUT_US, 1, "關於我們").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
     	menu.add(0, ID_GRADE, 2, "給APP評分").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -81,13 +108,13 @@ public class MainActivity extends SherlockFragmentActivity {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     	if (actionId == EditorInfo.IME_ACTION_SEARCH || event.getKeyCode() == KeyEvent.KEYCODE_ENTER ) {                    	  
-//                          Bundle bundle = new Bundle();
-//                          bundle.putString("SearchKeyword", v.getText().toString());
-//                          Intent intent = new Intent();
-//                          intent.setClass(MainActivity.this, SearchActivity.class);
-//                          intent.putExtras(bundle);
-//                          startActivity(intent);
-//                          itemSearch.collapseActionView();
+                          Bundle bundle = new Bundle();
+                          bundle.putString("SearchKeyword", v.getText().toString());
+                          Intent intent = new Intent();
+                          intent.setClass(MainActivity.this, SearchActivity.class);
+                          intent.putExtras(bundle);
+                          startActivity(intent);
+                          itemSearch.collapseActionView();
                           return true;
                       }
                         return false;
@@ -140,6 +167,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	    	Intent intent = new Intent(MainActivity.this, FavoriteActivity.class);
 	    	startActivity(intent);
 	        break;
+	    case ID_SETTING:
+	    	Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+	    	startActivity(intentSetting);
+	        break;
 	    case ID_SEARCH:
 	        break;
 	    }
@@ -188,5 +219,61 @@ public class MainActivity extends SherlockFragmentActivity {
 					}
 		});
 	}
+    
+    @Override
+    public void onBackPressed() {
+        if (pager.getCurrentItem() ==0) {
+            finish();
+        } else {
+            pager.setCurrentItem(0, true);
+        }
+    }
+    
+    private void setAdAdwhirl() {
+        // TODO Auto-generated method stub
+        AdWhirlManager.setConfigExpireTimeout(1000 * 60);
+        AdWhirlTargeting.setAge(23);
+        AdWhirlTargeting.setGender(AdWhirlTargeting.Gender.MALE);
+        AdWhirlTargeting.setKeywords("online games gaming");
+        AdWhirlTargeting.setPostalCode("94123");
+        AdWhirlTargeting.setTestMode(false);
+
+        AdWhirlLayout adwhirlLayout = new AdWhirlLayout(this, adWhirlKey);
+
+        LinearLayout mainLayout = (LinearLayout) findViewById(R.id.adonView);
+
+        adwhirlLayout.setAdWhirlInterface(this);
+
+        mainLayout.addView(adwhirlLayout);
+
+        mainLayout.invalidate();
+    }
+
+    @Override
+    public void adWhirlGeneric() {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void rotationHoriztion(int beganDegree, int endDegree, AdView view) {
+        final float centerX = 320 / 2.0f;
+        final float centerY = 48 / 2.0f;
+        final float zDepth = -0.50f * view.getHeight();
+
+        Rotate3dAnimation rotation = new Rotate3dAnimation(beganDegree, endDegree, centerX, centerY, zDepth, true);
+        rotation.setDuration(1000);
+        rotation.setInterpolator(new AccelerateInterpolator());
+        rotation.setAnimationListener(new Animation.AnimationListener() {
+            public void onAnimationStart(Animation animation) {
+            }
+
+            public void onAnimationEnd(Animation animation) {
+            }
+
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        view.startAnimation(rotation);
+    }
 
 }

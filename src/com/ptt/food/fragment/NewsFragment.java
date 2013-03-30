@@ -16,18 +16,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public final class NewsFragment extends Fragment {
     
-	private static int myPage = 1;
+	public static int myPage = 1;
 	private Boolean checkLoad = true;
 	private LinearLayout progressLayout;
+	private LinearLayout reloadLayout;
 	private LoadMoreListView myList;
-	private ArrayList<Article> newArticles;
-	private ArrayList<Article> moreArticles;
+	private ArrayList<Article> newArticles = new ArrayList<Article>();
+	private ArrayList<Article> moreArticles = new ArrayList<Article>();
 	private ListArticleAdapter myListAdapter;
+	private Button buttonReload;
 	
     public static NewsFragment newInstance() {     
    	 
@@ -41,7 +45,6 @@ public final class NewsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
               
-        new DownloadChannelsTask().execute();
     }
 
     @Override
@@ -49,6 +52,8 @@ public final class NewsFragment extends Fragment {
         
     	View myFragmentView = inflater.inflate(R.layout.loadmore, container, false);
     	progressLayout = (LinearLayout) myFragmentView.findViewById(R.id.layout_progress);
+    	reloadLayout = (LinearLayout) myFragmentView.findViewById(R.id.layout_reload);
+    	buttonReload = (Button) myFragmentView.findViewById(R.id.button_reload);
     	myList = (LoadMoreListView) myFragmentView.findViewById(R.id.news_list);
         myList.setOnLoadMoreListener(new OnLoadMoreListener() {
 			public void onLoadMore() {
@@ -61,6 +66,23 @@ public final class NewsFragment extends Fragment {
 				}
 			}
 		});
+        
+        buttonReload.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                progressLayout.setVisibility(View.VISIBLE);
+                reloadLayout.setVisibility(View.GONE);
+                new DownloadChannelsTask().execute();
+            }
+        });
+        
+        if (myListAdapter != null) {
+            progressLayout.setVisibility(View.GONE);
+            myList.setAdapter(myListAdapter);
+        } else {
+            new DownloadChannelsTask().execute();
+        }
+        
         return myFragmentView;
     }
 
@@ -84,7 +106,16 @@ public final class NewsFragment extends Fragment {
         protected Object doInBackground(Object... params) {
             // TODO Auto-generated method stub
         	
-        	newArticles = PttFoodAPI.getNewArticles(myPage);
+        	ArrayList<Article> gottenArticles = PttFoodAPI.getNewArticles(myPage);
+        	
+        	if(gottenArticles != null && gottenArticles.size()!=0){
+	        	for (int i=0; i< gottenArticles.size();i++){
+	        		String title = gottenArticles.get(i).getTitle();
+	        		if(title != null && title.indexOf("刪除")==-1 && !title.equals("")){
+	        			newArticles.add(gottenArticles.get(i));
+	        		}
+	        	}
+        	}
             return null;
         }
 
@@ -94,17 +125,19 @@ public final class NewsFragment extends Fragment {
             super.onPostExecute(result);
             progressLayout.setVisibility(View.GONE);
             
-            if(newArticles !=null){
-          	  try{
-          		  myListAdapter = new ListArticleAdapter(getActivity(), newArticles);
-  		          myList.setAdapter(myListAdapter);
-          	  }catch(Exception e){
-          		 
-          	  }
-            }else{
-	          	  ListNothingAdapter nothingAdapter = new ListNothingAdapter(getActivity());
-	          	  myList.setAdapter(nothingAdapter);
-            }
+            myListAdapter = new ListArticleAdapter(getActivity(), newArticles, false);
+	        myList.setAdapter(myListAdapter);
+            
+//            if(newArticles !=null && newArticles.size()!=0){
+//          	  try{
+//          		  myListAdapter = new ListArticleAdapter(getActivity(), newArticles, false);
+//  		          myList.setAdapter(myListAdapter);
+//          	  }catch(Exception e){
+//          		 
+//          	  }
+//            }else{
+//            	reloadLayout.setVisibility(View.VISIBLE);
+//            }
 
         }
     }
@@ -123,11 +156,15 @@ public final class NewsFragment extends Fragment {
         @Override
         protected Object doInBackground(Object... params) {
             // TODO Auto-generated method stub
-
+        	
+        	moreArticles.clear();
         	moreArticles = PttFoodAPI.getNewArticles(myPage); 
         	if(moreArticles!= null){
 	        	for(int i=0; i<moreArticles.size();i++){
-	        		newArticles.add(moreArticles.get(i));
+	        		String title = moreArticles.get(i).getTitle();
+	        		if(!title.equals("") && title.indexOf("刪除")==-1){
+	        			newArticles.add(moreArticles.get(i));
+	        		}
 	            }
         	}
         	
@@ -152,13 +189,4 @@ public final class NewsFragment extends Fragment {
         }
     }
     
-//    public boolean isOnline() {
-//	    ConnectivityManager cm =
-//	        (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-//	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-//	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-//	        return true;
-//	    }
-//	    return false;
-//	}
 }

@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.costum.android.widget.LoadMoreListView;
@@ -23,6 +25,8 @@ public class TypeFragment extends Fragment {
 	private LoadMoreListView myList;
 	private ArrayList<Category> categoryList;
 	private ListAdapter categoryAdapter;
+	private LinearLayout reloadLayout;
+	private Button buttonReload;
 	
     public static TypeFragment newInstance() {     
    	 
@@ -35,8 +39,6 @@ public class TypeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-              
-        new DownloadChannelsTask().execute();
     }
 
     @Override
@@ -44,6 +46,8 @@ public class TypeFragment extends Fragment {
         
     	View myFragmentView = inflater.inflate(R.layout.loadmore, container, false);
     	progressLayout = (LinearLayout) myFragmentView.findViewById(R.id.layout_progress);
+    	reloadLayout = (LinearLayout) myFragmentView.findViewById(R.id.layout_reload);
+    	buttonReload = (Button) myFragmentView.findViewById(R.id.button_reload);
     	myList = (LoadMoreListView) myFragmentView.findViewById(R.id.news_list);
         myList.setOnLoadMoreListener(new OnLoadMoreListener() {
 			public void onLoadMore() {
@@ -51,6 +55,23 @@ public class TypeFragment extends Fragment {
 				myList.onLoadMoreComplete();
 			}
 		});
+        
+        buttonReload.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                progressLayout.setVisibility(View.VISIBLE);
+                reloadLayout.setVisibility(View.GONE);
+                new DownloadChannelsTask().execute();
+            }
+        });
+        
+        if (categoryAdapter != null) {
+            progressLayout.setVisibility(View.GONE);
+            myList.setAdapter(categoryAdapter);
+        } else {
+            new DownloadChannelsTask().execute();
+        }
+        
         return myFragmentView;
     }
 
@@ -93,7 +114,7 @@ public class TypeFragment extends Fragment {
           		 
           	  }
             }else{
-          	   
+            	reloadLayout.setVisibility(View.VISIBLE);
             }
 
         }

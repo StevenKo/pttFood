@@ -15,6 +15,9 @@
 -->
 
 <resources>
+    
+    <color name="main_color_grey_dark">#dddddd</color>
+    
     <color name="android_green">#FFA4C639</color>
     <color name="honeycombish_blue">#FF58BAED</color>
     <color name="soft_grey">#FF777777</color>

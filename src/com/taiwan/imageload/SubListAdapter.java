@@ -18,6 +18,7 @@ import com.ptt.food.blog.ArticleActivity;
 import com.ptt.food.blog.R;
 import com.ptt.food.blog.SubActivity;
 import com.ptt.food.blog.entity.Category;
+import com.ptt.food.fragment.NewsFragment;
 
 public class SubListAdapter extends BaseAdapter {
     
@@ -77,9 +78,17 @@ public class SubListAdapter extends BaseAdapter {
 	        	vi.setOnClickListener(new OnClickListener() {
 		            @Override
 		            public void onClick(View v) {
-		                // Toast.makeText(activity, "tt", Toast.LENGTH_SHORT).show();
+		            	
+		            	int[] idArray = new int[data.size()];
+		            	for (int i=0; i<data.size(); i++){
+		            		idArray[i] = data.get(i).getId();
+		            	}
+	
 		                Intent intent = new Intent(activity, ArticleActivity.class);
 		                Bundle bundle = new Bundle();
+		                bundle.putIntArray("ArticleIds", idArray);
+		                bundle.putInt("ArticlePosition", position);
+		                bundle.putInt("PageNum", -1); // -1 means no need to load more articles
 		                bundle.putInt("ArticleId", data.get(position).getId());
 		                bundle.putString("ArticleTitle", data.get(position).getCateName());
 		                intent.putExtras(bundle);

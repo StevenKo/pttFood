@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+   <ScrollView 
+       android:layout_width="fill_parent"
+	   android:layout_height="wrap_content"
+       >
+    
+	    <LinearLayout 
+	        android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:orientation="vertical"
+	        >
+	    
+		    <TextView 
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="標題文字大小:"
+		    	android:layout_marginLeft="10dp"
+		    	android:textSize="18dp"
+		    	android:layout_marginTop="10dp"
+		        />
+		    
+		     <SeekBar
+		        android:id="@+id/seekBar1"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_margin="10dp"
+		        android:max="40"
+		        android:progress="20"
+		         />
+		     
+		     <TextView 
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="標題文字大小:"
+		    	android:layout_marginLeft="10dp"
+		    	android:textSize="18dp"
+		    	android:layout_marginTop="10dp"
+		        />
+		    
+		     <SeekBar
+		        android:id="@+id/seekBar2"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_margin="10dp"
+		        android:max="40"
+		        android:progress="20"
+		         />
+		     
+		     <TextView 
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="預覽: "
+		    	android:layout_marginLeft="10dp"
+		    	android:layout_marginTop="10dp"
+		    	android:textSize="18dp"
+		        />
+		     
+		     <TextView android:id="@+id/text_title_preview"
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="標題:Ptt部落美食"
+		    	android:layout_marginLeft="10dp"
+		    	android:layout_marginTop="10dp"
+		    	android:textSize="20px"
+		    	android:textColor="#9E1919"
+		        />
+		     
+		     <TextView android:id="@+id/text_content_preview"
+		        android:layout_width="wrap_content"
+		    	android:layout_height="wrap_content"
+		    	android:text="內容:部落美食文章內容"
+		    	android:layout_marginLeft="10dp"
+		    	android:textSize="20px"
+		        />
+		    
+
+		    
+	    </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
