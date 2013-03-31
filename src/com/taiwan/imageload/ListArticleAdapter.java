@@ -33,23 +33,23 @@ public class ListArticleAdapter extends BaseAdapter {
     private static LayoutInflater inflater=null;
     private boolean oneArticle = true;
   
-    private ArrayList<Article> fakeData = new ArrayList<Article>();
+//    private ArrayList<Article> fakeData = new ArrayList<Article>();
     
     public ListArticleAdapter(Activity a, ArrayList<Article> d, boolean oneArticle) {
     	
-    	fakeData.add(new Article(0, "author", "[請益]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[食記]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[電視]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[情報]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[討論]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[抱怨]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[廣宣]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[公告]好吃部落格", "2013.2.11", "", "", 0));
-    	fakeData.add(new Article(0, "author", "[吃喝]好吃部落格", "2013/02/11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[請益]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[食記]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[電視]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[情報]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[討論]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[抱怨]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[廣宣]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[公告]好吃部落格", "2013.2.11", "", "", 0));
+//    	fakeData.add(new Article(0, "author", "[吃喝]好吃部落格", "2013/02/11", "", "", 0));
         
     	activity = a;
-    	data = fakeData;
-//        data=d;
+//    	data = fakeData;
+        data=d;
         this.oneArticle = oneArticle;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         dataFavorite = DBAPI.getAllArticles(activity);
