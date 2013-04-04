@@ -170,7 +170,9 @@ public class PttFoodAPI {
                 String link = nObject.getString("link");
                 String release_time = nObject.getString("release_time");
                 String title = nObject.getString("title");
-                int category_id = nObject.getInt("category_id");
+                int category_id = 0;
+                if (!nObject.isNull("category_id"))
+                    category_id = nObject.getInt("category_id");
 
                 return new Article(article_id, author, title, release_time, content, link, category_id);
 
