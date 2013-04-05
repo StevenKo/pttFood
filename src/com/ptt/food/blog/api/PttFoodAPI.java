@@ -126,7 +126,7 @@ public class PttFoodAPI {
         }
 
         ArrayList<Article> articles = new ArrayList<Article>();
-        String message = getMessageFromServer("GET", "/api/v1/articles/search.json?keyword=" + keyword + "&page=" + page, null);
+        String message = getMessageFromServer("GET", "/api/v1/articles/search.json?keyword=" + query + "&page=" + page, null);
         if (message == null) {
             return null;
         } else {
