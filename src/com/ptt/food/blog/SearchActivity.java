@@ -12,36 +12,29 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Display;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.ads.AdView;
+import com.costum.android.widget.LoadMoreListView;
+import com.costum.android.widget.LoadMoreListView.OnLoadMoreListener;
+import com.ptt.food.blog.api.DBAPI;
 import com.ptt.food.blog.api.PttFoodAPI;
 import com.ptt.food.blog.entity.Article;
-import com.ptt.food.fragment.NewsFragment;
-import com.taiwan.imageload.ImageLoader;
 import com.taiwan.imageload.ListArticleAdapter;
 
-public class SearchActivity extends SherlockListActivity {
+public class SearchActivity extends SherlockActivity {
 
 	private static final int Contact_US = 0;
 	private static final int ID_ABOUT_US = 1;
@@ -53,11 +46,16 @@ public class SearchActivity extends SherlockListActivity {
     private Bundle              mBundle;
     private String              keyword;
     private ArrayList<Article>  articles;
-    private ListView            articleListView;
+    private ArrayList<Article> favoriteArticles = new ArrayList<Article>();
+    private LoadMoreListView    articleListView;
     private MenuItem            item;
+    public static int myPage = 1;
+    private Boolean checkLoad = true;
+    private ArrayList<Article> moreArticles = new ArrayList<Article>();
 
     private LinearLayout        layoutNoSearch;
     private AlertDialog.Builder aboutUsDialog;
+    private ListArticleAdapter myListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +68,7 @@ public class SearchActivity extends SherlockListActivity {
         
         mBundle = this.getIntent().getExtras();
         keyword = mBundle.getString("SearchKeyword");
-        articleListView = this.getListView();
+        articleListView = (LoadMoreListView) findViewById(R.id.list_loadmore);
 
         articleListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -86,67 +84,26 @@ public class SearchActivity extends SherlockListActivity {
             }
 
         });
+        
+        articleListView.setOnLoadMoreListener(new OnLoadMoreListener() {
+			public void onLoadMore() {
+				// Do the work to load more items at the end of list				
+				if(checkLoad){
+					myPage = myPage +1;
+					new LoadMoreTask().execute();
+				}else{
+					articleListView.onLoadMoreComplete();
+				}
+			}
+		});
 
-        setAboutDialog();        
+        setAboutDialog();
+        
+        favoriteArticles = DBAPI.getAllArticles(SearchActivity.this);
         new LoadDataTask().execute();
     }
 
-   
-
-//    public class SearchAdapter extends BaseAdapter {
-//
-//        private final Context          mContext;
-//        private final ArrayList<Article> articles;
-//        private final ImageLoader      imageLoader;
-//
-//        public SearchAdapter(Context mContext, ArrayList<Article> articles) {
-//            this.articles = articles;
-//            this.mContext = mContext;
-//            imageLoader = new ImageLoader(mContext);
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return articles.size();
-//        }
-//
-//        @Override
-//        public Object getItem(int position) {
-//            return position;
-//        }
-//
-//        @Override
-//        public long getItemId(int position) {
-//            return position;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            LayoutInflater myInflater = LayoutInflater.from(mContext);
-//            View converView = myInflater.inflate(R.layout.item_novel_search, null);
-//            ImageView pic = (ImageView) converView.findViewById(R.id.grid_item_image);
-//            TextView name = (TextView) converView.findViewById(R.id.grid_item_name);
-//            TextView author = (TextView) converView.findViewById(R.id.grid_item_author);
-//            TextView articleNum = (TextView) converView.findViewById(R.id.grid_item_counts);
-//            TextView textFinish = (TextView) converView.findViewById(R.id.grid_item_finish);
-//            TextView textSerialize = (TextView) converView.findViewById(R.id.serializing);
-//
-//            imageLoader.DisplayImage(novels.get(position).getPic(), pic);
-//            name.setText(novels.get(position).getName());
-//            author.setText(novels.get(position).getAuthor());
-//            articleNum.setText(novels.get(position).getArticleNum());
-//            textFinish.setText(novels.get(position).getLastUpdate());
-//
-//            if (novels.get(position).isSerializing()) {
-//                textSerialize.setText("連載中...");
-//            } else {
-//                textSerialize.setText("全本");
-//            }
-//
-//            return converView;
-//        }
-//
-//    }
+    
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -273,7 +230,8 @@ public class SearchActivity extends SherlockListActivity {
             progressdialogInit.dismiss();
             if (articles != null && articles.size() != 0) {
 //                articleListView.setAdapter(new SearchAdapter(SearchActivity.this, articles));
-            	articleListView.setAdapter(new ListArticleAdapter(SearchActivity.this, articles, true));
+            	myListAdapter =  new ListArticleAdapter(SearchActivity.this, articles, favoriteArticles, true);
+            	articleListView.setAdapter(myListAdapter);
             } else {
                 layoutNoSearch.setVisibility(View.VISIBLE);
             }
@@ -291,6 +249,43 @@ public class SearchActivity extends SherlockListActivity {
     private void fetchData() {
         articles = PttFoodAPI.searchArticles(keyword, 1);
     }
+    
+    private class LoadMoreTask extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object... params) {
+            // TODO Auto-generated method stub
+        	
+        	moreArticles.clear();
+        	moreArticles = PttFoodAPI.searchArticles(keyword, myPage);
+        	if(moreArticles!= null){
+	        	for(int i=0; i<moreArticles.size();i++){
+	        		String title = moreArticles.get(i).getTitle();
+	        		if(!title.equals("") && title.indexOf("刪除")==-1){
+	        			articles.add(moreArticles.get(i));
+	        		}
+	            }
+        	}
+        	
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            
+            if(moreArticles!= null){
+            	myListAdapter.notifyDataSetChanged();	                
+            }else{
+                checkLoad= false;
+                Toast.makeText(SearchActivity.this, "no more data", Toast.LENGTH_SHORT).show();            	
+            }       
+            articleListView.onLoadMoreComplete();
+          	
+          	
+        }
+    }
 
     private void setAboutDialog() {
 		// TODO Auto-generated method stub
@@ -304,6 +299,16 @@ public class SearchActivity extends SherlockListActivity {
 					}
 		});
 	}
+    
+    @Override
+	public void onResume() {
+        super.onResume();        
+        if(myListAdapter!=null){
+        	favoriteArticles = DBAPI.getAllArticles(SearchActivity.this);
+        	myListAdapter.dataFavorite = favoriteArticles;
+        	myListAdapter.notifyDataSetChanged();        	
+        }
+    }
 
 
 }

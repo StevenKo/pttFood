@@ -368,7 +368,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
             }else{
             	// 重試
             	layoutReload.setVisibility(View.VISIBLE);
-            	Toast.makeText(getApplicationContext(), "無資料,請重試！", Toast.LENGTH_SHORT).show();
+//            	Toast.makeText(getApplicationContext(), "無資料,請重試！", Toast.LENGTH_SHORT).show();
             }           
         }
 	}
@@ -443,6 +443,7 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
         	webBoolean = true;
         	webArticle.loadUrl(myAricle.getLink());            	
         }else{
+        	itemSite.setVisible(false);
         	webBoolean = false;
         }
         

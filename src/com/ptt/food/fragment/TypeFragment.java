@@ -120,14 +120,4 @@ public class TypeFragment extends Fragment {
         }
     }
     
-    
-//    public boolean isOnline() {
-//	    ConnectivityManager cm =
-//	        (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-//	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-//	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-//	        return true;
-//	    }
-//	    return false;
-//	}
 }

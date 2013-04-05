@@ -40,9 +40,11 @@ public class FavoriteActivity extends SherlockActivity implements AdWhirlInterfa
     private static final int ID_SETTING = 6;
 
 	private ArrayList<Article> articleList = new ArrayList<Article>();
+	private ArrayList<Article> favoriteArticles = new ArrayList<Article>();
 	private ListView myList;
 	private LinearLayout progressLayout;
 	private AlertDialog.Builder aboutUsDialog;
+	private ListArticleAdapter myListAdapter ;
 	
 	private final String   adWhirlKey  = "5dc7684994954d51add2cd7b0768f564";
 	
@@ -59,6 +61,7 @@ public class FavoriteActivity extends SherlockActivity implements AdWhirlInterfa
         ab.setTitle(" 我的最愛");
         ab.setDisplayHomeAsUpEnabled(true);
        
+        favoriteArticles = DBAPI.getAllArticles(FavoriteActivity.this);
         new SearchFavoriteTask().execute();
         
         try {
@@ -141,7 +144,7 @@ public class FavoriteActivity extends SherlockActivity implements AdWhirlInterfa
             super.onPostExecute(result);
             progressLayout.setVisibility(View.GONE);
             if(articleList.size()!=0){
-            	 ListArticleAdapter myListAdapter = new ListArticleAdapter(FavoriteActivity.this, articleList, true);
+            	 myListAdapter = new ListArticleAdapter(FavoriteActivity.this, articleList, favoriteArticles, true);
  		         myList.setAdapter(myListAdapter);
             }else{
             	ListNothingAdapter nothingAdapter = new ListNothingAdapter(FavoriteActivity.this);
@@ -163,6 +166,16 @@ public class FavoriteActivity extends SherlockActivity implements AdWhirlInterfa
 					}
 		});
 	}
+	
+	@Override
+	public void onResume() {
+        super.onResume();        
+        if(myListAdapter!=null){
+        	favoriteArticles = DBAPI.getAllArticles(FavoriteActivity.this);
+        	myListAdapter.dataFavorite = favoriteArticles;
+        	myListAdapter.notifyDataSetChanged();        	
+        }
+    }
 	
 	private void setAdAdwhirl() {
         // TODO Auto-generated method stub

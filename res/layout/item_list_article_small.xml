@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/custom_list">  
+    
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:gravity="center_vertical"
+	    android:layout_marginTop="5dp"
+	    android:layout_marginBottom="5dp"
+	    android:layout_marginLeft="10dp"
+	    android:layout_marginRight="10dp"	    
+	     >
+	    <Button android:id="@+id/button_item_category"
+	        android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:text="台北"
+	    	android:background="@drawable/custom_button"
+	        />
+	    <LinearLayout 
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:orientation="vertical"
+	            >
+	            <TextView android:id="@+id/text_article_title"
+	                android:layout_width="wrap_content"
+	       			android:layout_height="wrap_content"
+	       			android:text="[食記] [新竹‧清夜] 寧波包子 ～也有豆豉辣椒"
+	       			android:textColor="#AD8440"
+	       			android:layout_marginLeft="3dp"
+	    			android:layout_marginRight="3dp"
+	    			android:textSize="25px"
+	                />
+	            <TextView android:id="@+id/text_article_date"
+	                android:layout_width="wrap_content"
+	       			android:layout_height="wrap_content"
+	       			android:text="2013/3/21"
+	       			android:layout_marginLeft="3dp"
+	       			android:textSize="20px"
+	                />
+	    </LinearLayout>
+	    <CheckBox android:id="@+id/checkbox_article"
+	        android:layout_width="32dp"
+	        android:layout_height="32dp"
+	        android:button="@drawable/custom_checkbox"
+	        />
+    </LinearLayout>
+
+</LinearLayout>

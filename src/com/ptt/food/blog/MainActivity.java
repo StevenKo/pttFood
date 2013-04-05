@@ -220,6 +220,7 @@ public class MainActivity extends SherlockFragmentActivity implements AdWhirlInt
 		});
 	}
     
+    
     @Override
     public void onBackPressed() {
         if (pager.getCurrentItem() ==0) {

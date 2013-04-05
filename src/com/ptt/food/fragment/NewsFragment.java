@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import com.costum.android.widget.LoadMoreListView;
 import com.costum.android.widget.LoadMoreListView.OnLoadMoreListener;
 import com.ptt.food.blog.R;
+import com.ptt.food.blog.api.DBAPI;
 import com.ptt.food.blog.api.PttFoodAPI;
 import com.ptt.food.blog.entity.Article;
 import com.taiwan.imageload.ListArticleAdapter;
-import com.taiwan.imageload.ListNothingAdapter;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ public final class NewsFragment extends Fragment {
 	private LoadMoreListView myList;
 	private ArrayList<Article> newArticles = new ArrayList<Article>();
 	private ArrayList<Article> moreArticles = new ArrayList<Article>();
+	private ArrayList<Article> favoriteArticles = new ArrayList<Article>();
 	private ListArticleAdapter myListAdapter;
 	private Button buttonReload;
 	
@@ -85,6 +86,16 @@ public final class NewsFragment extends Fragment {
         
         return myFragmentView;
     }
+    
+    @Override
+	public void onResume() {
+        super.onResume();        
+        if(myListAdapter!=null){
+        	favoriteArticles = DBAPI.getAllArticles(getActivity());
+        	myListAdapter.dataFavorite = favoriteArticles;
+        	myListAdapter.notifyDataSetChanged();        	
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -106,6 +117,7 @@ public final class NewsFragment extends Fragment {
         protected Object doInBackground(Object... params) {
             // TODO Auto-generated method stub
         	
+        	favoriteArticles = DBAPI.getAllArticles(getActivity());
         	ArrayList<Article> gottenArticles = PttFoodAPI.getNewArticles(myPage);
         	
         	if(gottenArticles != null && gottenArticles.size()!=0){
@@ -124,20 +136,17 @@ public final class NewsFragment extends Fragment {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
             progressLayout.setVisibility(View.GONE);
-            
-            myListAdapter = new ListArticleAdapter(getActivity(), newArticles, false);
-	        myList.setAdapter(myListAdapter);
-            
-//            if(newArticles !=null && newArticles.size()!=0){
-//          	  try{
-//          		  myListAdapter = new ListArticleAdapter(getActivity(), newArticles, false);
-//  		          myList.setAdapter(myListAdapter);
-//          	  }catch(Exception e){
-//          		 
-//          	  }
-//            }else{
-//            	reloadLayout.setVisibility(View.VISIBLE);
-//            }
+                       
+            if(newArticles !=null && newArticles.size()!=0){
+          	  try{
+          		myListAdapter = new ListArticleAdapter(getActivity(), newArticles, favoriteArticles, false);
+    	        myList.setAdapter(myListAdapter);
+          	  }catch(Exception e){
+          		 
+          	  }
+            }else{
+            	reloadLayout.setVisibility(View.VISIBLE);
+            }
 
         }
     }

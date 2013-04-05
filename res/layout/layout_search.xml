@@ -29,8 +29,8 @@
 	        />
 	</LinearLayout>
     
-	<ListView
-        android:id="@+id/android:list"
+	<com.costum.android.widget.LoadMoreListView
+        android:id="@+id/list_loadmore"
         android:cacheColorHint="#00000000"
         android:layout_width="fill_parent"
         android:layout_height="0dp"

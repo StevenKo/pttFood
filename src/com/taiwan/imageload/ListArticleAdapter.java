@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +30,13 @@ public class ListArticleAdapter extends BaseAdapter {
     
     private Activity activity;
     private ArrayList<Article> data;
-    private ArrayList<Article> dataFavorite;
+    public static ArrayList<Article> dataFavorite;
     private static LayoutInflater inflater=null;
     private boolean oneArticle = true;
   
 //    private ArrayList<Article> fakeData = new ArrayList<Article>();
     
-    public ListArticleAdapter(Activity a, ArrayList<Article> d, boolean oneArticle) {
+    public ListArticleAdapter(Activity a, ArrayList<Article> d, ArrayList<Article> dFavorite,boolean oneArticle) {
     	
 //    	fakeData.add(new Article(0, "author", "[請益]好吃部落格", "2013.2.11", "", "", 0));
 //    	fakeData.add(new Article(0, "author", "[食記]好吃部落格", "2013.2.11", "", "", 0));
@@ -52,7 +53,8 @@ public class ListArticleAdapter extends BaseAdapter {
         data=d;
         this.oneArticle = oneArticle;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        dataFavorite = DBAPI.getAllArticles(activity);
+//        dataFavorite = DBAPI.getAllArticles(activity);
+        dataFavorite = dFavorite;
         
     }
 
@@ -69,8 +71,17 @@ public class ListArticleAdapter extends BaseAdapter {
     }
     
     public View getView(final int position, View convertView, ViewGroup parent) {
-    	
-            View vi = inflater.inflate(R.layout.item_list_article, null);
+    		
+    	 	View vi = inflater.inflate(R.layout.item_list_article, null);
+    		
+	    	Display display = activity.getWindowManager().getDefaultDisplay();
+	        int width = display.getWidth(); // deprecated
+	        int height = display.getHeight(); // deprecated
+	
+	        if (width < 500) {           
+	            vi = inflater.inflate(R.layout.item_list_article_small, null);
+	        }
+    		           
 	        TextView text=(TextView)vi.findViewById(R.id.text_article_title);
 	        TextView textDate=(TextView)vi.findViewById(R.id.text_article_date);
 	        final Button button = (Button)vi.findViewById(R.id.button_item_category);
@@ -113,7 +124,14 @@ public class ListArticleAdapter extends BaseAdapter {
 	        	}
 	        	
 	        }else{
-	        	button.setVisibility(View.INVISIBLE);
+//	        	button.setVisibility(View.INVISIBLE);
+	        	if(data.get(position).getTitle().indexOf("食記")!=-1){
+	        		button.setText("食記");
+	        		button.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.custom_button));   
+	        	}else{
+		        	button.setText("其他");
+		        	button.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.custom_button_others));
+	        	}
 	        }
 	        
 	        for(int i =0; i<dataFavorite.size();i++){
