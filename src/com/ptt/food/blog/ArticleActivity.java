@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -171,7 +173,8 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
         articleTextView.setTextSize(textContentSize);
         
         webArticle = (WebView) findViewById (R.id.web_article);
-        webArticle.getSettings().setSupportZoom(true); 
+        webArticle.getSettings().setSupportZoom(true);
+//        webArticle.getSettings().setBuiltInZoomControls(true);
         webArticle.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);   
         webArticle.setWebViewClient(new WebViewClient());
         webArticle.setVisibility(View.GONE);
@@ -434,6 +437,12 @@ public class ArticleActivity extends SherlockFragmentActivity implements DetectS
 	private void setUIAfterLoading() {
 			
         articleTextView.setText(myAricle.getContent());
+		Linkify.addLinks(articleTextView, Linkify.ALL);
+		
+		
+//        articleTextView.setText("Test Test"+Html.fromHtml(
+//        		myAricle.getContent()));
+//        articleTextView.setMovementMethod(LinkMovementMethod.getInstance());
         
         String text = "<font color=#9E1919>"+myAricle.getTitle()+"</font>"+ "<font color=#AD8440>"+" by "+myAricle.getAuthor()+"</font>";
         articleTextTitle.setText(Html.fromHtml(text));
