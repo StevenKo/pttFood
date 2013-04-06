@@ -91,6 +91,7 @@
 		    	android:paddingTop="10dp"
 		    	android:paddingBottom="20dp"
 		    	android:text="tttt"
+		    	android:textIsSelectable="true"
 		        />
 	    </com.kosbrother.tool.DetectScrollView>
     </LinearLayout>
